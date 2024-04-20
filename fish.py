@@ -1,8 +1,12 @@
 import pygame
 import random
+import fisherman
+import os
 
 # start pygame
 pygame.init()
+
+dirname = os.path.dirname(__file__)
 
 # screen dimensions
 screen_width, screen_height = 1300, 576
@@ -10,37 +14,67 @@ screen_width, screen_height = 1300, 576
 # display 
 window = pygame.display.set_mode((screen_width, screen_height))
 
+
 # images
-background_image = pygame.image.load('/Users/zoe/Documents/seo/fish_game/images/background.png')
-player_image = pygame.image.load('/Users/zoe/Documents/seo/fish_game/images/fisherman.png')
-rod_image = pygame.image.load('/Users/zoe/Documents/seo/fish_game/images/rod.png')
+background_image_path = os.path.join(dirname, 'images/background.png')
+background_image = pygame.image.load(background_image_path)
+
+player_image_path = os.path.join(dirname, 'images/fisherman.png')
+player_image = pygame.image.load(player_image_path)
+
+rod_image_path = os.path.join(dirname, 'images/rod.png')
+rod_image = pygame.image.load(rod_image_path)
+
+#fish_image_paths
+fish_image_paths = [
+    os.path.join(dirname, 'images/fish_1.png'),
+    os.path.join(dirname, 'images/fish_2.png'),
+    os.path.join(dirname, 'images/fish_3.png'),
+    os.path.join(dirname, 'images/fish_4.png')
+]
+
+#trash_image_paths
+trash_image_paths = [
+    os.path.join(dirname, 'images/boot.png'),
+    os.path.join(dirname, 'images/boot.png'),
+    os.path.join(dirname, 'images/boot.png')
+]
+
+#hostile_fish_paths
+hostile_fish_image_paths = [
+    os.path.join(dirname, 'images/hostile_fish_1.png'),
+    os.path.join(dirname, 'images/hostile_fish_2.png'),
+    os.path.join(dirname, 'images/hostile_fish_3.png'),
+    os.path.join(dirname, 'images/hostile_fish_4.png')
+]
+
 
 # select each fish image randomly from available options
 def choose_fish_image():
     fish_images = [
-        pygame.image.load('/Users/zoe/Documents/seo/fish_game/images/fish_1.png'),
-        pygame.image.load('/Users/zoe/Documents/seo/fish_game/images/fish_2.png'),
-        pygame.image.load('/Users/zoe/Documents/seo/fish_game/images/fish_3.png'),
-        pygame.image.load('/Users/zoe/Documents/seo/fish_game/images/fish_4.png')
+        pygame.image.load(fish_image_paths[0]),
+        pygame.image.load(fish_image_paths[1]),
+        pygame.image.load(fish_image_paths[2]),
+        pygame.image.load(fish_image_paths[3])
     ]
     return random.choice(fish_images)
 
 # select each trash image randomly from available options
 def choose_trash_image():
     trash_images = [
-        pygame.image.load('/Users/zoe/Documents/seo/fish_game/images/boot.png'),
-        pygame.image.load('/Users/zoe/Documents/seo/fish_game/images/boot.png'),
-        pygame.image.load('/Users/zoe/Documents/seo/fish_game/images/boot.png')
+        pygame.image.load(trash_image_paths[0]),
+        pygame.image.load(trash_image_paths[1]),
+        pygame.image.load(trash_image_paths[2])
     ]
     return random.choice(trash_images)
 
 # select each hostile fish image randomly from available options
 def choose_hostile_fish_image():
     hostile_fish_images = [
-        pygame.image.load('/Users/zoe/Documents/seo/fish_game/images/hostile_fish_1.png'),
-        pygame.image.load('/Users/zoe/Documents/seo/fish_game/images/hostile_fish_2.png'),
-        pygame.image.load('/Users/zoe/Documents/seo/fish_game/images/hostile_fish_3.png'),
-        pygame.image.load('/Users/zoe/Documents/seo/fish_game/images/hostile_fish_4.png')
+        pygame.image.load(hostile_fish_image_paths[0]),
+        pygame.image.load(hostile_fish_image_paths[1]),
+        pygame.image.load(hostile_fish_image_paths[2]),
+        pygame.image.load(hostile_fish_image_paths[3])
     ]
     return random.choice(hostile_fish_images)
 
@@ -108,6 +142,9 @@ for hostile_fish in range(hostile_fish_amount):
 
 # setup score
 score = 0
+
+#Creates fisherman object
+#fisherman = fisherman.Fisherman(player_image_path, x_position)
 
 # game loop
 running = True
