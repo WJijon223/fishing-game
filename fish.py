@@ -121,7 +121,7 @@ player_speed = 5
 
 # fish properties
 fish_size = (40, 40)
-fish_speed = 1
+fish_speed = 2
 fish_descent = 10
 fishes = []
 
@@ -138,7 +138,7 @@ hostile_fish_descent = 10
 hostile_fishes = []
 
 # randomize the amount of fish that gets generated
-fish_amount = random.randint(1,6)
+fish_amount = random.randint(5,9)
 trash_amount = random.randint(1,3)
 hostile_fish_amount = random.randint(1,2)
 
@@ -151,7 +151,7 @@ for fish in range(fish_amount):
     fish_image = choose_fish_image()
 for fish in range(fish_amount):
     fish_x = random.randint(0, screen_width - fish_size[0])
-    fish_y = random.randint(25,200)
+    fish_y = random.randint(50,375)
     fish_direction = random.choice([-1, 1])
     fish = [fish_x, fish_y, fish_direction]
     fishes.append(fish)
@@ -171,7 +171,7 @@ for hostile_fish in range(hostile_fish_amount):
     hostile_fish_image = choose_hostile_fish_image()
 for hostile_fish in range(hostile_fish_amount):
     hostile_fish_x = random.randint(0, screen_width - hostile_fish_size[0])
-    hostile_fish_y = random.randint(25,200)
+    hostile_fish_y = random.randint(50,375)
     hostile_fish_direction = random.choice([-1, 1])
     hostile_fish = [hostile_fish_x, hostile_fish_y, hostile_fish_direction]
     hostile_fishes.append(hostile_fish)
