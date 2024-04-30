@@ -256,7 +256,7 @@ while running:
     # collision detection for fishing rod
     # if fishing rod collides with fish, remove fish from list and add change score based on fish type
     for fish in list(fishes):
-        if hook_x < fish[0] < hook_x + 100 and hook_y < fish[1] < hook_y+10:
+        if hook_x - 50 < fish[0] < hook_x + 50 and hook_y - 5 < fish[1] < hook_y+5:
             fishes.remove(fish)
             if fishable_objects[0] == 'fish':
                 score += fish_points[0]
@@ -266,10 +266,10 @@ while running:
                 score += fish_points[2]
         
     #Detect horizontal bounds for the fisherman, hook, and rod
-    if player_x < 0:
-        player_x = 0
-        hook_x = 205
-        fishing_rod.x = 247
+    if player_x < -150:
+        player_x = -150
+        hook_x = 205 - 150
+        fishing_rod.x = 247 - 150
     if player_x > screen_width - 270:
         player_x = screen_width - 270
         fishing_rod.x = screen_width - 22
@@ -278,6 +278,8 @@ while running:
     #Detect vertical bounds for the hook
     if hook_y < fishing_rod.y - 7:
         hook_y = fishing_rod.y - 7
+    if hook_y > fishing_rod.line_max_length:
+        hook_y = fishing_rod.line_max_length
 
     
     # update display
