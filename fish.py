@@ -1,6 +1,5 @@
 import pygame
 import random
-import fisherman
 import os
 
 # start pygame
@@ -14,6 +13,37 @@ screen_width, screen_height = 1300, 576
 # display 
 window = pygame.display.set_mode((screen_width, screen_height))
 
+#Getting the fishing rod color
+WHITE = (255,255,255)
+
+#Creating a rod class within fish.py to avoid import errors
+class Rod:
+    def __init__(self,image,x,y):
+        self.image = image
+        self.x = x
+        self.y = y
+        self.line_length = 0
+        self.color = WHITE
+        self.line_thickness = 4
+        self.reel_speed = 5
+        self.line_max_length = screen_height - 50
+        self.casting = False
+
+    def set_casting(self, bool_value):
+        self.casting = bool_value
+
+    def draw(self,screen):
+        pygame.draw.line(screen, self.color, (self.x ,self.y), (self.x , self.y + self.line_length), self.line_thickness)
+    
+    def cast_line(self):
+        if self.line_length < self.line_max_length:
+            self.line_length += self.reel_speed
+    
+    def reel_in(self):
+        if self.line_length > 0:
+            self.line_length -=5
+        else:
+            self.set_casting(False)
 
 # images
 background_image_path = os.path.join(dirname, 'images/background.png')
@@ -21,9 +51,15 @@ background_image = pygame.image.load(background_image_path)
 
 player_image_path = os.path.join(dirname, 'images/fisherman.png')
 player_image = pygame.image.load(player_image_path)
+player_image = pygame.transform.scale(player_image, (250,250))
 
 rod_image_path = os.path.join(dirname, 'images/rod.png')
 rod_image = pygame.image.load(rod_image_path)
+rod_image = pygame.transform.scale(rod_image, (100,100))
+
+hook_image_path = os.path.join(dirname, 'images/hook.png')
+hook_image = pygame.image.load(hook_image_path)
+hook_image = pygame.transform.scale(hook_image, (50,50))
 
 #fish_image_paths
 fish_image_paths = [
@@ -80,7 +116,7 @@ def choose_hostile_fish_image():
 
 # player location and speed
 player_x = screen_width // 2
-player_y = screen_height - 100
+player_y = screen_height - 700
 player_speed = 5
 
 # fish properties
@@ -143,8 +179,11 @@ for hostile_fish in range(hostile_fish_amount):
 # setup score
 score = 0
 
-#Creates fisherman object
-#fisherman = fisherman.Fisherman(player_image_path, x_position)
+fishing_rod = Rod(rod_image, player_x + 248, player_y + 125)
+
+#Hook properties
+hook_x = fishing_rod.x - 42
+hook_y = fishing_rod.y - 7
 
 # game loop
 running = True
@@ -152,10 +191,44 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_SPACE:
+                fishing_rod.set_casting(True)
+        
+    # Get keys state
+    keys = pygame.key.get_pressed()
+    
+    # Checking if the arrow keys are pressed down
+    if keys[pygame.K_RIGHT]:
+        player_x += player_speed
+        fishing_rod.x += player_speed
+        hook_x += player_speed
+    if keys[pygame.K_LEFT]:
+        player_x -= player_speed
+        fishing_rod.x -= player_speed
+        hook_x -= player_speed
+    if keys[pygame.K_SPACE] and fishing_rod.casting == False:
+        fishing_rod.cast_line()
+        hook_y += 5
+    if keys[pygame.K_UP]:
+        fishing_rod.reel_in()
+        hook_y -= 5
             
     # set background
     window.blit(background_image, (0, 0))
+
+    #Draw the rod
+    window.blit(fishing_rod.image,(player_x + 165, player_y + 50))
     
+    #draw the fisherman
+    window.blit(player_image, (player_x,player_y))
+
+    #draw the hook
+    window.blit(hook_image, (hook_x, hook_y))
+
+    #Draw the rod_line
+    fishing_rod.draw(window)
+
     # draw fish
     for fish in fishes:
         fish[0] += fish_speed * fish[2]
@@ -183,7 +256,7 @@ while running:
     # collision detection for fishing rod
     # if fishing rod collides with fish, remove fish from list and add change score based on fish type
     for fish in list(fishes):
-        if player_x < fish[0] < player_x + 100 and player_y < fish[1] < player_y + 100:
+        if hook_x < fish[0] < hook_x + 100 and hook_y < fish[1] < hook_y+10:
             fishes.remove(fish)
             if fishable_objects[0] == 'fish':
                 score += fish_points[0]
@@ -192,6 +265,21 @@ while running:
             elif fishable_objects[0] == 'trash':
                 score += fish_points[2]
         
+    #Detect horizontal bounds for the fisherman, hook, and rod
+    if player_x < 0:
+        player_x = 0
+        hook_x = 205
+        fishing_rod.x = 247
+    if player_x > screen_width - 270:
+        player_x = screen_width - 270
+        fishing_rod.x = screen_width - 22
+        hook_x = fishing_rod.x - 42
+    
+    #Detect vertical bounds for the hook
+    if hook_y < fishing_rod.y - 7:
+        hook_y = fishing_rod.y - 7
+
+    
     # update display
     pygame.display.flip()
 
