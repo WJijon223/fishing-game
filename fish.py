@@ -16,6 +16,12 @@ window = pygame.display.set_mode((screen_width, screen_height))
 #Getting the fishing rod color
 WHITE = (255,255,255)
 
+# initialize score as 0
+score = 0
+
+# set up score printing
+score_text = pygame.font.Font(None, 36)
+
 #Creating a rod class within fish.py to avoid import errors
 class Rod:
     def __init__(self,image,x,y):
@@ -48,6 +54,9 @@ class Rod:
 # images
 background_image_path = os.path.join(dirname, 'images/background.png')
 background_image = pygame.image.load(background_image_path)
+
+game_over_image_path = os.path.join(dirname, 'images/game_over.png')
+game_over = pygame.image.load(game_over_image_path)
 
 player_image_path = os.path.join(dirname, 'images/fisherman.png')
 player_image = pygame.image.load(player_image_path)
@@ -84,8 +93,7 @@ hostile_fish_image_paths = [
     os.path.join(dirname, 'images/hostile_fish_4.png')
 ]
 
-
-# select each fish image randomly from available options
+# select fish image randomly from available options
 def choose_fish_image():
     fish_images = [
         pygame.image.load(fish_image_paths[0]),
@@ -95,7 +103,7 @@ def choose_fish_image():
     ]
     return random.choice(fish_images)
 
-# select each trash image randomly from available options
+# select trash image randomly from available options
 def choose_trash_image():
     trash_images = [
         pygame.image.load(trash_image_paths[0]),
@@ -104,7 +112,7 @@ def choose_trash_image():
     ]
     return random.choice(trash_images)
 
-# select each hostile fish image randomly from available options
+# select hostile fish image randomly from available options
 def choose_hostile_fish_image():
     hostile_fish_images = [
         pygame.image.load(hostile_fish_image_paths[0]),
@@ -142,9 +150,9 @@ fish_amount = random.randint(5,9)
 trash_amount = random.randint(1,3)
 hostile_fish_amount = random.randint(1,2)
 
-# randomize fishable objects
+# fishable objects
 fishable_objects = ['fish', 'hostile fish', 'trash']
-fish_points = [100, -50, 0]  # points for fish, hostile fish, trash
+fish_points = [200, -100, -50]  # points for fish, hostile fish, trash
 
 # populate fish so that there are no more than 10 fish on the screen
 for fish in range(fish_amount):
@@ -176,9 +184,7 @@ for hostile_fish in range(hostile_fish_amount):
     hostile_fish = [hostile_fish_x, hostile_fish_y, hostile_fish_direction]
     hostile_fishes.append(hostile_fish)
 
-# setup score
-score = 0
-
+# create fishing rod
 fishing_rod = Rod(rod_image, player_x + 248, player_y + 125)
 
 #Hook properties
@@ -256,14 +262,54 @@ while running:
     # collision detection for fishing rod
     # if fishing rod collides with fish, remove fish from list and add change score based on fish type
     for fish in list(fishes):
-        if hook_x - 50 < fish[0] < hook_x + 50 and hook_y - 5 < fish[1] < hook_y+5:
-            fishes.remove(fish)
-            if fishable_objects[0] == 'fish':
+        if len(fishes) > 1:
+            if hook_x - 50 < fish[0] < hook_x + 50 and hook_y - 5 < fish[1] < hook_y+5:
+                fishes.remove(fish)
                 score += fish_points[0]
-            elif fishable_objects[0] == 'hostile fish':
-                score += fish_points[1]
-            elif fishable_objects[0] == 'trash':
-                score += fish_points[2]
+        elif len(fishes) == 1:
+            if hook_x - 50 < fish[0] < hook_x + 50 and hook_y - 5 < fish[1] < hook_y+5:
+                # remove the final fish
+                fishes.remove(fish)
+                
+                # remove all remaining trash and hostile fish
+                for trash in list(multiple_trash):
+                    multiple_trash.remove(trash)
+                for hostile_fish in list(hostile_fishes):
+                    hostile_fishes.remove(hostile_fish)
+                    
+                # hide the player, hook, rod, and line
+                player_x = -1000
+                player_y = -1000
+                hook_x = -1000
+                hook_y = -1000
+                fishing_rod.x = -1000
+                fishing_rod.y = -1000
+                fishing_rod.line_length = 0
+                
+                # change background to game over screen
+                window.blit(game_over, (0, 0))
+                
+                # print final score 
+                print_score = score_text.render("Score: " + str(score), True, (255, 255, 255))
+                window.blit(print_score, (600.08, 420.76))
+                
+                # hold screen
+                pygame.display.flip()
+                pygame.time.wait(5000)
+                
+                # quit game
+                running = False
+                
+        
+    # if fishing rod collides with hostile fish, change score based on hostile fish type
+    for hostile_fish in list(hostile_fishes):
+        if hook_x - 50 < hostile_fish[0] < hook_x + 50 and hook_y - 5 < hostile_fish[1] < hook_y+5:
+            score += fish_points[1]    
+        
+    # if fishing rod collides with trash, change score based on trash type
+    for trash in list(multiple_trash):
+        if hook_x - 50 < trash[0] < hook_x + 50 and hook_y - 5 < trash[1] < hook_y+5:
+            score += fish_points[2]        
         
     #Detect horizontal bounds for the fisherman, hook, and rod
     if player_x < -150:
@@ -280,7 +326,10 @@ while running:
         hook_y = fishing_rod.y - 7
     if hook_y > fishing_rod.line_max_length:
         hook_y = fishing_rod.line_max_length
-
+    
+    # print the score
+    print_score = score_text.render("Score: " + str(score), True, (255, 255, 255))
+    window.blit(print_score, (10, 10))
     
     # update display
     pygame.display.flip()
