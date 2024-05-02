@@ -1,9 +1,11 @@
 import pygame
+from pygame import mixer
 import random
 import os
 
 # start pygame
 pygame.init()
+mixer.init()
 
 dirname = os.path.dirname(__file__)
 
@@ -51,46 +53,52 @@ class Rod:
         else:
             self.set_casting(False)
 
+#music
+music_path = os.path.join(dirname, 'images&music/backgroundmusic.mp3')
+mixer.music.load(music_path)
+mixer.music.set_volume(1.5)
+mixer.music.play()
+
 # images
-background_image_path = os.path.join(dirname, 'images/background.png')
+background_image_path = os.path.join(dirname, 'images&music/background.png')
 background_image = pygame.image.load(background_image_path)
 
-game_over_image_path = os.path.join(dirname, 'images/game_over.png')
+game_over_image_path = os.path.join(dirname, 'images&music/game_over.png')
 game_over = pygame.image.load(game_over_image_path)
 
-player_image_path = os.path.join(dirname, 'images/fisherman.png')
+player_image_path = os.path.join(dirname, 'images&music/fisherman.png')
 player_image = pygame.image.load(player_image_path)
 player_image = pygame.transform.scale(player_image, (250,250))
 
-rod_image_path = os.path.join(dirname, 'images/rod.png')
+rod_image_path = os.path.join(dirname, 'images&music/rod.png')
 rod_image = pygame.image.load(rod_image_path)
 rod_image = pygame.transform.scale(rod_image, (100,100))
 
-hook_image_path = os.path.join(dirname, 'images/hook.png')
+hook_image_path = os.path.join(dirname, 'images&music/hook.png')
 hook_image = pygame.image.load(hook_image_path)
 hook_image = pygame.transform.scale(hook_image, (50,50))
 
 #fish_image_paths
 fish_image_paths = [
-    os.path.join(dirname, 'images/fish_1.png'),
-    os.path.join(dirname, 'images/fish_2.png'),
-    os.path.join(dirname, 'images/fish_3.png'),
-    os.path.join(dirname, 'images/fish_4.png')
+    os.path.join(dirname, 'images&music/fish_1.png'),
+    os.path.join(dirname, 'images&music/fish_2.png'),
+    os.path.join(dirname, 'images&music/fish_3.png'),
+    os.path.join(dirname, 'images&music/fish_4.png')
 ]
 
 #trash_image_paths
 trash_image_paths = [
-    os.path.join(dirname, 'images/boot.png'),
-    os.path.join(dirname, 'images/boot.png'),
-    os.path.join(dirname, 'images/boot.png')
+    os.path.join(dirname, 'images&music/boot.png'),
+    os.path.join(dirname, 'images&music/boot.png'),
+    os.path.join(dirname, 'images&music/boot.png')
 ]
 
 #hostile_fish_paths
 hostile_fish_image_paths = [
-    os.path.join(dirname, 'images/hostile_fish_1.png'),
-    os.path.join(dirname, 'images/hostile_fish_2.png'),
-    os.path.join(dirname, 'images/hostile_fish_3.png'),
-    os.path.join(dirname, 'images/hostile_fish_4.png')
+    os.path.join(dirname, 'images&music/hostile_fish_1.png'),
+    os.path.join(dirname, 'images&music/hostile_fish_2.png'),
+    os.path.join(dirname, 'images&music/hostile_fish_3.png'),
+    os.path.join(dirname, 'images&music/hostile_fish_4.png')
 ]
 
 # select fish image randomly from available options
